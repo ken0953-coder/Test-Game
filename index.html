@@ -7,6 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a2e">
     <title>俄羅斯方塊</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -39,14 +40,14 @@
         .panel-title { font-size: 8px; color: #888; text-transform: uppercase; }
         .panel-value { font-size: 14px; font-weight: bold; color: #38bdf8; }
         .next-canvas { background: rgba(0, 0, 0, 0.4); border-radius: 4px; }
-        .joystick-area { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 6px; width: 100%; max-width: 340px; }
-        .joystick-container { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
-        .joystick-base { position: absolute; width: 80px; height: 80px; background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.05) 70%); border: 2px solid rgba(56, 189, 248, 0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-        .joystick-thumb { position: absolute; width: 32px; height: 32px; background: radial-gradient(circle, #38bdf8 0%, #0ea5e9 100%); border-radius: 50%; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); cursor: pointer; }
+        .joystick-area { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 6px; width: 100%; max-width: 340px; }
+        .joystick-container { position: relative; width: 75px; height: 75px; flex-shrink: 0; }
+        .joystick-base { position: absolute; width: 75px; height: 75px; background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.05) 70%); border: 2px solid rgba(56, 189, 248, 0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .joystick-thumb { position: absolute; width: 30px; height: 30px; background: radial-gradient(circle, #38bdf8 0%, #0ea5e9 100%); border-radius: 50%; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); cursor: pointer; }
         .action-buttons { display: flex; flex-direction: column; gap: 6px; align-items: center; }
-        .action-btn { width: 40px; height: 40px; background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(56, 189, 248, 0.1) 100%); border: 2px solid rgba(56, 189, 248, 0.5); border-radius: 50%; color: #38bdf8; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+        .action-btn { width: 38px; height: 38px; background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(56, 189, 248, 0.1) 100%); border: 2px solid rgba(56, 189, 248, 0.5); border-radius: 50%; color: #38bdf8; font-size: 15px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
         .action-btn:active { background: rgba(56, 189, 248, 0.5); transform: scale(0.95); }
-        .action-btn.rotate { width: 48px; height: 48px; font-size: 18px; position: relative; }
+        .action-btn.rotate { width: 46px; height: 46px; font-size: 17px; position: relative; }
         .action-btn.rotate::after { content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: #38bdf8; border-radius: 2px; transition: width 0.1s; }
         .action-btn.rotate.holding::after { width: 80%; }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; z-index: 10; border-radius: 6px; }
@@ -172,7 +173,7 @@
         const joystick=document.getElementById('joystick');
         const thumb=document.getElementById('joystickThumb');
         let joyActive=false, joyX=0, joyY=0, joyTimer=null;
-        const MAX_DIST=32;
+        const MAX_DIST=30;
         thumb.addEventListener('touchstart',e=>{e.preventDefault();joyActive=true;thumb.style.transition='none';},{passive:false});
         document.addEventListener('touchmove',e=>{
             if(!joyActive)return;
