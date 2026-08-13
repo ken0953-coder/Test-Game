@@ -1,0 +1,14 @@
+{
+  "appId": "com.tetris.classic",
+  "appName": "Tetris",
+  "webDir": "www",
+  "bundledRuntimeBuild": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

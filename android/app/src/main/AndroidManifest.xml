@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tetris App - Release Build Configuration
+  
+  To sign your app for Google Play release:
+  1. Create a keystore: keytool -genkeypair -v -storetype PKCS12 -keystore tetris-release.keystore -alias tetris -keyalg RSA -keysize 2048 -validity 10000
+  2. Place the keystore in android/app/ directory
+  3. Update the signing config below with your passwords
+  4. Run: ./gradlew assembleRelease
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tetris.classic">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:networkSecurityConfig="@xml/network_security_config">
+        
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:exported="true"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- Optional: Add vibration for game feedback -->
+    <!-- <uses-permission android:name="android.permission.VIBRATE" /> -->
+    
+    <!-- Game hardware requirements -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+</manifest>

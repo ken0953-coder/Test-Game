@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>俄羅斯方塊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
+        
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+        }
+        
+        .game-header {
+            text-align: center;
+            color: #fff;
+        }
+        
+        .game-title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
+        }
+        
+        .game-container {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .game-board {
+            position: relative;
+        }
+        
+        canvas#gameCanvas {
+            display: block;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #38bdf8;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: #fff;
+            min-width: 90px;
+        }
+        
+        .panel-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .panel-title {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .panel-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        
+        .next-canvas {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+        }
+        
+        /* 虛擬搖桿 */
+        .joystick-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin-top: 10px;
+        }
+        
+        .joystick-base {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.05) 70%);
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .joystick-center {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(56, 189, 248, 0.6);
+            border-radius: 50%;
+        }
+        
+        .joystick-thumb {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #38bdf8 0%, #0ea5e9 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6), 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.1s ease-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .joystick-thumb::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+        
+        .joystick-thumb.dragging {
+            transition: none;
+        }
+        
+        /* 方向標記 */
+        .direction-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .dir-mark {
+            position: absolute;
+            color: rgba(56, 189, 248, 0.5);
+            font-size: 16px;
+        }
+        
+        .dir-mark.up { top: 5px; left: 50%; transform: translateX(-50%); }
+        .dir-mark.down { bottom: 5px; left: 50%; transform: translateX(-50%); }
+        .dir-mark.left { left: 5px; top: 50%; transform: translateY(-50%); }
+        .dir-mark.right { right: 5px; top: 50%; transform: translateY(-50%); }
+        
+        /* 動作按鈕 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(56, 189, 248, 0.1) 100%);
+            border: 2px solid rgba(56, 189, 248, 0.5);
+            border-radius: 50%;
+            color: #38bdf8;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .action-btn:active {
+            background: rgba(56, 189, 248, 0.5);
+            transform: scale(0.95);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+        }
+        
+        .action-btn.rotate {
+            width: 80px;
+            height: 80px;
+            font-size: 28px;
+        }
+        
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .overlay.hidden {
+            display: none;
+        }
+        
+        .overlay-title {
+            font-size: 42px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        
+        .overlay-subtitle {
+            font-size: 16px;
+            color: #888;
+        }
+        
+        .start-btn {
+            padding: 15px 50px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            border: none;
+            border-radius: 30px;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+        }
+        
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
+        }
+        
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 操作提示 */
+        .controls-hint {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        /* 手機版優化 */
+        @media (max-width: 600px) {
+            .game-wrapper {
+                padding: 5px;
+            }
+            
+            .game-title {
+                font-size: 22px;
+            }
+            
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .side-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                max-width: 320px;
+            }
+            
+            .panel-box {
+                flex: 1;
+                min-width: 70px;
+                padding: 8px;
+            }
+            
+            .panel-value {
+                font-size: 16px;
+            }
+            
+            canvas#gameCanvas {
+                max-width: 250px;
+                max-height: 500px;
+            }
+            
+            .joystick-container {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .joystick-base {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .action-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+            
+            .action-btn.rotate {
+                width: 70px;
+                height: 70px;
+                font-size: 24px;
+            }
+        }
+        
+        @media (min-width: 601px) {
+            canvas#gameCanvas {
+                width: 300px;
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-header">
+            <div class="game-title">俄 羅 斯 方 塊</div>
+        </div>
+        
+        <div class="game-container">
+            <div class="game-board">
+                <canvas id="gameCanvas"></canvas>
+                <div class="overlay" id="startOverlay">
+                    <div class="overlay-title">俄羅斯方塊</div>
+                    <div class="overlay-subtitle">T E T R I S</div>
+                    <button class="start-btn" onclick="startGame()">開始遊戲</button>
+                </div>
+                <div class="overlay hidden" id="gameOverOverlay">
+                    <div class="overlay-title">遊戲結束</div>
+                    <div class="overlay-subtitle" id="finalScore">得分: 0</div>
+                    <button class="start-btn" onclick="startGame()">再玩一次</button>
+                </div>
+                <div class="overlay hidden" id="pauseOverlay">
+                    <div class="overlay-title">暫停</div>
+                    <button class="start-btn" onclick="togglePause()">繼續</button>
+                </div>
+            </div>
+            
+            <div class="side-panel">
+                <div class="panel-box">
+                    <div class="panel-title">得分</div>
+                    <div class="panel-value" id="score">0</div>
+                </div>
+                <div class="panel-box">
+                    <div class="panel-title">等級</div>
+                    <div class="panel-value" id="level">1</div>
+                </div>
+                <div class="panel-box">
+                    <div class="panel-title">行數</div>
+                    <div class="panel-value" id="lines">0</div>
+                </div>
+                <div class="panel-box">
+                    <div class="panel-title">下一個</div>
+                    <canvas id="nextCanvas" class="next-canvas" width="80" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls-hint">使用搖桿移動 • 按鈕旋轉/下降</div>
+        
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <div class="joystick-container" id="joystick">
+                <div class="joystick-base">
+                    <div class="joystick-center"></div>
+                    <div class="direction-marks">
+                        <span class="dir-mark up">↑</span>
+                        <span class="dir-mark down">↓</span>
+                        <span class="dir-mark left">←</span>
+                        <span class="dir-mark right">→</span>
+                    </div>
+                </div>
+                <div class="joystick-thumb" id="joystickThumb"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <div class="action-btn rotate" id="btnRotate" ontouchstart="rotate()" onclick="rotate()">↻</div>
+            </div>
+            <div class="action-buttons">
+                <div class="action-btn" id="btnHardDrop" ontouchstart="hardDrop()" onclick="hardDrop()">⬇</div>
+                <div class="action-btn" id="btnPause" ontouchstart="togglePause()" onclick="togglePause()">❚❚</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('nextCanvas');
+        const nextCtx = nextCanvas.getContext('2d');
+        
+        // 響應式畫布大小
+        function resizeCanvas() {
+            const maxWidth = Math.min(300, window.innerWidth - 40);
+            const scale = maxWidth / 300;
+            canvas.width = maxWidth;
+            canvas.height = maxWidth * 2;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        const COLS = 10;
+        const ROWS = 20;
+        let BLOCK_SIZE = canvas.width / COLS;
+        
+        const COLORS = [
+            null,
+            '#00f0f0', // I - cyan
+            '#0000f0', // J - blue
+            '#f0a000', // L - orange
+            '#f0f000', // O - yellow
+            '#00f000', // S - green
+            '#a000f0', // T - purple
+            '#f00000'  // Z - red
+        ];
+        
+        const SHAPES = [
+            null,
+            [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], // I
+            [[2,0,0],[2,2,2],[0,0,0]], // J
+            [[0,0,3],[3,3,3],[0,0,0]], // L
+            [[4,4],[4,4]], // O
+            [[0,5,5],[5,5,0],[0,0,0]], // S
+            [[0,6,0],[6,6,6],[0,0,0]], // T
+            [[7,7,0],[0,7,7],[0,0,0]]  // Z
+        ];
+        
+        let board = [];
+        let currentPiece = null;
+        let nextPiece = null;
+        let score = 0;
+        let lines = 0;
+        let level = 1;
+        let gameRunning = false;
+        let gamePaused = false;
+        let dropInterval = 1000;
+        let lastDrop = 0;
+        let animationId = null;
+        
+        // 虛擬搖桿
+        const joystick = document.getElementById('joystick');
+        const joystickThumb = document.getElementById('joystickThumb');
+        let joystickActive = false;
+        let joystickX = 0;
+        let joystickY = 0;
+        let joystickTimeout = null;
+        
+        // 搖桿初始化
+        const JOYSTICK_MAX_DIST = 45;
+        const JOYSTICK_CENTER = { x: 75, y: 75 };
+        
+        function initJoystick() {
+            let startX, startY;
+            
+            joystickThumb.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                joystickActive = true;
+                joystickThumb.classList.add('dragging');
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+            }, { passive: false });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!joystickActive) return;
+                e.preventDefault();
+                
+                const touch = Array.from(e.touches).find(t => 
+                    t.clientX > joystick.offsetLeft && 
+                    t.clientX < joystick.offsetLeft + joystick.offsetWidth &&
+                    t.clientY > joystick.offsetTop &&
+                    t.clientY < joystick.offsetTop + joystick.offsetHeight
+                );
+                
+                if (!touch) return;
+                
+                const rect = joystick.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                let deltaX = touch.clientX - centerX;
+                let deltaY = touch.clientY - centerY;
+                
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const maxDist = JOYSTICK_MAX_DIST;
+                
+                if (distance > maxDist) {
+                    deltaX = (deltaX / distance) * maxDist;
+                    deltaY = (deltaY / distance) * maxDist;
+                }
+                
+                joystickThumb.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                
+                // 計算方向
+                joystickX = deltaX / maxDist;
+                joystickY = deltaY / maxDist;
+                
+                // 清除之前的定時器
+                if (joystickTimeout) {
+                    clearTimeout(joystickTimeout);
+                    joystickTimeout = null;
+                }
+                
+                // 根據搖桿方向觸發操作
+                if (Math.abs(joystickX) > 0.3) {
+                    if (joystickX > 0) moveRight();
+                    else moveLeft();
+                    
+                    joystickTimeout = setTimeout(() => {
+                        joystickTimeout = setTimeout(() => {
+                            if (Math.abs(joystickX) > 0.3) {
+                                if (joystickX > 0) moveRight();
+                                else moveLeft();
+                            }
+                        }, 100);
+                    }, 150);
+                }
+                
+                if (joystickY < -0.3) {
+                    rotate();
+                } else if (joystickY > 0.5) {
+                    hardDrop();
+                }
+            }, { passive: false });
+            
+            document.addEventListener('touchend', (e) => {
+                if (!joystickActive) return;
+                joystickActive = false;
+                joystickThumb.classList.remove('dragging');
+                joystickThumb.style.transform = 'translate(0px, 0px)';
+                joystickX = 0;
+                joystickY = 0;
+                if (joystickTimeout) {
+                    clearTimeout(joystickTimeout);
+                    joystickTimeout = null;
+                }
+            });
+            
+            // 滑鼠支援（電腦測試）
+            joystickThumb.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                joystickActive = true;
+                joystickThumb.classList.add('dragging');
+                startX = e.clientX;
+                startY = e.clientY;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!joystickActive) return;
+                
+                const rect = joystick.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                let deltaX = e.clientX - centerX;
+                let deltaY = e.clientY - centerY;
+                
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const maxDist = JOYSTICK_MAX_DIST;
+                
+                if (distance > maxDist) {
+                    deltaX = (deltaX / distance) * maxDist;
+                    deltaY = (deltaY / distance) * maxDist;
+                }
+                
+                joystickThumb.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                joystickX = deltaX / maxDist;
+                joystickY = deltaY / maxDist;
+                
+                if (Math.abs(joystickX) > 0.3) {
+                    if (joystickX > 0) moveRight();
+                    else moveLeft();
+                }
+                if (joystickY < -0.3) rotate();
+                else if (joystickY > 0.5) hardDrop();
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (!joystickActive) return;
+                joystickActive = false;
+                joystickThumb.classList.remove('dragging');
+                joystickThumb.style.transform = 'translate(0px, 0px)';
+                joystickX = 0;
+                joystickY = 0;
+            });
+        }
+        
+        initJoystick();
+        
+        class Piece {
+            constructor(type) {
+                this.type = type;
+                this.shape = SHAPES[type].map(row => [...row]);
+                this.x = Math.floor(COLS / 2) - Math.floor(this.shape[0].length / 2);
+                this.y = 0;
+            }
+            
+            rotate() {
+                const N = this.shape.length;
+                const rotated = [];
+                for (let i = 0; i < N; i++) {
+                    rotated[i] = [];
+                    for (let j = 0; j < N; j++) {
+                        rotated[i][j] = this.shape[N - 1 - j][i];
+                    }
+                }
+                return rotated;
+            }
+        }
+        
+        function createBoard() {
+            return Array.from({length: ROWS}, () => Array(COLS).fill(0));
+        }
+        
+        function randomPiece() {
+            const type = Math.floor(Math.random() * 7) + 1;
+            return new Piece(type);
+        }
+        
+        function drawBlock(context, x, y, color) {
+            const size = BLOCK_SIZE;
+            context.fillStyle = color;
+            context.fillRect(x * size, y * size, size, size);
+            
+            // 高光
+            context.fillStyle = 'rgba(255,255,255,0.25)';
+            context.fillRect(x * size, y * size, size, 2);
+            context.fillRect(x * size, y * size, 2, size);
+            
+            // 陰影
+            context.fillStyle = 'rgba(0,0,0,0.35)';
+            context.fillRect(x * size + size - 2, y * size, 2, size);
+            context.fillRect(x * size, y * size + size - 2, size, 2);
+            
+            // 邊框
+            context.strokeStyle = 'rgba(0,0,0,0.5)';
+            context.lineWidth = 0.5;
+            context.strokeRect(x * size, y * size, size, size);
+        }
+        
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 網格
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= COLS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * BLOCK_SIZE, 0);
+                ctx.lineTo(i * BLOCK_SIZE, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= ROWS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * BLOCK_SIZE);
+                ctx.lineTo(canvas.width, i * BLOCK_SIZE);
+                ctx.stroke();
+            }
+            
+            // 已放置的方塊
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x]) {
+                        drawBlock(ctx, x, y, COLORS[board[y][x]]);
+                    }
+                }
+            }
+        }
+        
+        function drawPiece(piece) {
+            if (!piece) return;
+            piece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        drawBlock(ctx, piece.x + x, piece.y + y, COLORS[value]);
+                    }
+                });
+            });
+        }
+        
+        function drawNext() {
+            nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+            if (!nextPiece) return;
+            
+            const blockSize = 18;
+            const offsetX = (nextCanvas.width - nextPiece.shape[0].length * blockSize) / 2;
+            const offsetY = (nextCanvas.height - nextPiece.shape.length * blockSize) / 2;
+            
+            nextPiece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        nextCtx.fillStyle = COLORS[value];
+                        nextCtx.fillRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
+                        nextCtx.strokeStyle = 'rgba(0,0,0,0.5)';
+                        nextCtx.lineWidth = 0.5;
+                        nextCtx.strokeRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
+                    }
+                });
+            });
+        }
+        
+        function isValidPosition(shape, xOffset, yOffset, offsetX = 0, offsetY = 0) {
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x]) {
+                        const newX = offsetX + x + xOffset;
+                        const newY = offsetY + y + yOffset;
+                        
+                        if (newX < 0 || newX >= COLS || newY >= ROWS) {
+                            return false;
+                        }
+                        
+                        if (newY >= 0 && board[newY][newX]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        
+        function placePiece() {
+            if (!currentPiece) return;
+            currentPiece.shape.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        const boardY = currentPiece.y + y;
+                        const boardX = currentPiece.x + x;
+                        if (boardY >= 0) {
+                            board[boardY][boardX] = value;
+                        }
+                    }
+                });
+            });
+        }
+        
+        function clearLines() {
+            let linesCleared = 0;
+            
+            for (let y = ROWS - 1; y >= 0; y--) {
+                if (board[y].every(cell => cell !== 0)) {
+                    board.splice(y, 1);
+                    board.unshift(Array(COLS).fill(0));
+                    linesCleared++;
+                    y++;
+                }
+            }
+            
+            if (linesCleared > 0) {
+                const points = [0, 100, 300, 500, 800];
+                score += points[linesCleared] * level;
+                lines += linesCleared;
+                level = Math.floor(lines / 10) + 1;
+                dropInterval = Math.max(100, 1000 - (level - 1) * 80);
+                updateDisplay();
+            }
+        }
+        
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            document.getElementById('lines').textContent = lines;
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            cancelAnimationFrame(animationId);
+            document.getElementById('finalScore').textContent = `得分: ${score}`;
+            document.getElementById('gameOverOverlay').classList.remove('hidden');
+        }
+        
+        function spawnPiece() {
+            currentPiece = nextPiece || randomPiece();
+            nextPiece = randomPiece();
+            drawNext();
+            
+            if (!isValidPosition(currentPiece.shape, 0, 0, currentPiece.x, currentPiece.y)) {
+                gameOver();
+            }
+        }
+        
+        function moveDown() {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+            
+            if (isValidPosition(currentPiece.shape, 0, 1, currentPiece.x, currentPiece.y)) {
+                currentPiece.y++;
+            } else {
+                placePiece();
+                clearLines();
+                spawnPiece();
+            }
+        }
+        
+        function moveLeft() {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+            if (isValidPosition(currentPiece.shape, -1, 0, currentPiece.x, currentPiece.y)) {
+                currentPiece.x--;
+            }
+        }
+        
+        function moveRight() {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+            if (isValidPosition(currentPiece.shape, 1, 0, currentPiece.x, currentPiece.y)) {
+                currentPiece.x++;
+            }
+        }
+        
+        function rotate() {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+            
+            const rotated = currentPiece.rotate();
+            const kicks = [-1, 1, -2, 2, 0];
+            
+            for (const kick of kicks) {
+                if (isValidPosition(rotated, kick, 0, currentPiece.x, currentPiece.y)) {
+                    currentPiece.shape = rotated;
+                    currentPiece.x += kick;
+                    return;
+                }
+            }
+        }
+        
+        function hardDrop() {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+            
+            while (isValidPosition(currentPiece.shape, 0, 1, currentPiece.x, currentPiece.y)) {
+                currentPiece.y++;
+                score += 2;
+            }
+            placePiece();
+            clearLines();
+            spawnPiece();
+            updateDisplay();
+        }
+        
+        function togglePause() {
+            if (!gameRunning) return;
+            
+            gamePaused = !gamePaused;
+            document.getElementById('pauseOverlay').classList.toggle('hidden', !gamePaused);
+        }
+        
+        function gameLoop(timestamp) {
+            if (!gameRunning) return;
+            
+            if (!gamePaused && timestamp - lastDrop > dropInterval) {
+                moveDown();
+                lastDrop = timestamp;
+            }
+            
+            drawBoard();
+            drawPiece(currentPiece);
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+        
+        function startGame() {
+            board = createBoard();
+            score = 0;
+            lines = 0;
+            level = 1;
+            dropInterval = 1000;
+            gameRunning = true;
+            gamePaused = false;
+            currentPiece = null;
+            nextPiece = null;
+            
+            resizeCanvas();
+            BLOCK_SIZE = canvas.width / COLS;
+            
+            updateDisplay();
+            
+            document.getElementById('startOverlay').classList.add('hidden');
+            document.getElementById('gameOverOverlay').classList.add('hidden');
+            document.getElementById('pauseOverlay').classList.add('hidden');
+            
+            spawnPiece();
+            lastDrop = performance.now();
+            animationId = requestAnimationFrame(gameLoop);
+        }
+        
+        // 鍵盤控制
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    moveLeft();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    moveRight();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    rotate();
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    hardDrop();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    hardDrop();
+                    break;
+                case 'p':
+                case 'P':
+                    togglePause();
+                    break;
+            }
+        });
+        
+        // 觸控滑動控制
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+        
+        document.addEventListener('touchend', (e) => {
+            if (!gameRunning || gamePaused) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const deltaTime = Date.now() - touchStartTime;
+            
+            const minSwipe = 30;
+            
+            // 在遊戲區域的滑動
+            const gameRect = canvas.getBoundingClientRect();
+            if (touchStartX >= gameRect.left && touchStartX <= gameRect.right &&
+                touchStartY >= gameRect.top && touchStartY <= gameRect.bottom) {
+                
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    if (Math.abs(deltaX) > minSwipe) {
+                        if (deltaX > 0) moveRight();
+                        else moveLeft();
+                    }
+                } else {
+                    if (deltaY > minSwipe && deltaTime < 200) hardDrop();
+                    else if (deltaY > minSwipe * 1.5) moveDown();
+                }
+            }
+        }, { passive: true });
+        
+        // 初始繪製
+        drawBoard();
+    </script>
+</body>
+</html>

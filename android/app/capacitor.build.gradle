@@ -1,0 +1,3 @@
+packageBuilderOptions {
+    addJavascriptInterface = true
+}
