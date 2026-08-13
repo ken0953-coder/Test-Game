@@ -32,37 +32,37 @@
         }
         .game-header { text-align: center; color: #fff; }
         .game-title { font-size: 14px; font-weight: bold; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .game-container { display: flex; gap: 3px; align-items: flex-start; width: 100%; max-width: 300px; }
+        .game-container { display: flex; gap: 3px; align-items: flex-start; width: 100%; max-width: 280px; }
         .game-board { position: relative; flex: 1; min-width: 0; }
-        canvas#gameCanvas { display: block; width: 100%; background: rgba(0, 0, 0, 0.6); border: 2px solid #38bdf8; border-radius: 4px; box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
-        .side-panel { display: flex; flex-direction: column; gap: 2px; color: #fff; min-width: 45px; }
+        canvas#gameCanvas { display: block; width: 100%; background: rgba(0, 0, 0, 0.6); border: 2px solid #38bdf8; border-radius: 4px; }
+        .side-panel { display: flex; flex-direction: column; gap: 2px; color: #fff; min-width: 42px; }
         .panel-box { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 3px; padding: 2px; text-align: center; }
         .panel-title { font-size: 6px; color: #888; text-transform: uppercase; }
-        .panel-value { font-size: 11px; font-weight: bold; color: #38bdf8; }
+        .panel-value { font-size: 10px; font-weight: bold; color: #38bdf8; }
         .next-canvas { background: rgba(0, 0, 0, 0.4); border-radius: 3px; }
         
-        /* 控制區域 */
+        /* 控制區域 - 更緊湊 */
         .controls-area {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             margin-top: 2px;
             width: 100%;
-            max-width: 300px;
-            padding-bottom: 8px;
+            max-width: 280px;
+            padding-bottom: 4px;
         }
         .dpad {
             display: grid;
-            grid-template-columns: repeat(3, 28px);
-            grid-template-rows: repeat(3, 28px);
+            grid-template-columns: repeat(3, 26px);
+            grid-template-rows: repeat(3, 26px);
             gap: 2px;
         }
         .dpad-btn {
-            width: 28px;
-            height: 28px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(56, 189, 248, 0.1) 100%);
-            border: 1.5px solid rgba(56, 189, 248, 0.5);
+            width: 26px;
+            height: 26px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(56, 189, 248, 0.08) 100%);
+            border: 1.5px solid rgba(56, 189, 248, 0.45);
             border-radius: 5px;
             color: #38bdf8;
             font-size: 12px;
@@ -70,10 +70,9 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.1s;
             -webkit-tap-highlight-color: transparent;
         }
-        .dpad-btn:active { background: rgba(56, 189, 248, 0.5); transform: scale(0.92); }
+        .dpad-btn:active { background: rgba(56, 189, 248, 0.45); }
         .dpad-center { background: transparent; border: none; }
         
         .action-buttons {
@@ -83,27 +82,26 @@
             align-items: center;
         }
         .action-btn {
-            width: 36px;
-            height: 36px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(56, 189, 248, 0.1) 100%);
-            border: 2px solid rgba(56, 189, 248, 0.5);
+            width: 34px;
+            height: 34px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(56, 189, 248, 0.08) 100%);
+            border: 1.5px solid rgba(56, 189, 248, 0.45);
             border-radius: 50%;
             color: #38bdf8;
-            font-size: 14px;
+            font-size: 13px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
-        .action-btn:active { background: rgba(56, 189, 248, 0.5); transform: scale(0.95); }
+        .action-btn:active { background: rgba(56, 189, 248, 0.45); }
         
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; z-index: 10; border-radius: 4px; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; z-index: 10; border-radius: 4px; }
         .overlay.hidden { display: none; }
-        .overlay-title { font-size: 20px; font-weight: bold; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .start-btn { padding: 6px 24px; background: linear-gradient(90deg, #38bdf8, #818cf8); border: none; border-radius: 14px; color: #000; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .controls-hint { color: rgba(255, 255, 255, 0.4); font-size: 7px; text-align: center; padding: 0 2px; }
+        .overlay-title { font-size: 18px; font-weight: bold; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .start-btn { padding: 5px 22px; background: linear-gradient(90deg, #38bdf8, #818cf8); border: none; border-radius: 12px; color: #000; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .controls-hint { color: rgba(255, 255, 255, 0.35); font-size: 6px; text-align: center; }
     </style>
 </head>
 <body>
@@ -113,13 +111,13 @@
             <div class="game-board">
                 <canvas id="gameCanvas"></canvas>
                 <div class="overlay" id="startOverlay"><div class="overlay-title">俄羅斯方塊</div><button class="start-btn" onclick="startGame()">開始遊戲</button></div>
-                <div class="overlay hidden" id="gameOverOverlay"><div class="overlay-title">遊戲結束</div><div id="finalScore" style="color:#888;font-size:10px"></div><button class="start-btn" onclick="startGame()">再玩一次</button></div>
+                <div class="overlay hidden" id="gameOverOverlay"><div class="overlay-title">遊戲結束</div><div id="finalScore" style="color:#888;font-size:9px"></div><button class="start-btn" onclick="startGame()">再玩一次</button></div>
                 <div class="overlay hidden" id="pauseOverlay"><div class="overlay-title">暫停</div><button class="start-btn" onclick="togglePause()">繼續</button></div>
             </div>
             <div class="side-panel">
                 <div class="panel-box"><div class="panel-title">得分</div><div class="panel-value" id="score">0</div></div>
                 <div class="panel-box"><div class="panel-title">等級</div><div class="panel-value" id="level">1</div></div>
-                <div class="panel-box"><div class="panel-title">下一個</div><canvas id="nextCanvas" class="next-canvas" width="36" height="36"></canvas></div>
+                <div class="panel-box"><div class="panel-title">下一個</div><canvas id="nextCanvas" class="next-canvas" width="34" height="34"></canvas></div>
             </div>
         </div>
         <div class="controls-area">
@@ -149,7 +147,7 @@
         const nextCtx = nextCanvas.getContext('2d');
         let BLOCK_SIZE = 30, COLS = 10, ROWS = 20;
         function resizeCanvas() { 
-            const maxWidth = Math.min(window.innerWidth - 10, 200); 
+            const maxWidth = Math.min(window.innerWidth - 10, 190); 
             canvas.width = maxWidth; 
             canvas.height = maxWidth * 2; 
             BLOCK_SIZE = canvas.width / COLS; 
@@ -162,7 +160,9 @@
         let score = 0, lines = 0, level = 1;
         let gameRunning = false, gamePaused = false;
         let dropInterval = 1000, lastDrop = 0, animationId = null;
-        let lastRotateTime = 0;
+        let lastMoveTime = 0, lastRotateTime = 0;
+        let moveDebounce = 150;
+        let rotateDebounce = 100;
         
         class Piece {
             constructor(type) { this.type = type; this.shape = SHAPES[type].map(r => [...r]); this.x = Math.floor(COLS / 2) - Math.floor(this.shape[0].length / 2); this.y = 0; }
@@ -206,46 +206,67 @@
         function updateDisplay() { document.getElementById('score').textContent=score; document.getElementById('level').textContent=level; }
         function gameOver() { gameRunning=false; cancelAnimationFrame(animationId); document.getElementById('finalScore').textContent='得分: '+score; document.getElementById('gameOverOverlay').classList.remove('hidden'); }
         function spawnPiece() { currentPiece=nextPiece||randomPiece(); nextPiece=randomPiece(); drawNext(); if(!isValid(currentPiece.shape,0,0,currentPiece.x,currentPiece.y)) gameOver(); }
+        
         function moveDown() { if(!gameRunning||gamePaused||!currentPiece)return; if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++;else{placePiece();clearLines();spawnPiece();} }
+        
+        // 移動方向 - 使用防抖動確保每次只移動一格
         function moveLeft() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
+            const now = Date.now();
+            if(now - lastMoveTime < moveDebounce) return;
+            lastMoveTime = now;
             if(isValid(currentPiece.shape,-1,0,currentPiece.x,currentPiece.y))currentPiece.x--; 
         }
+        
         function moveRight() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
+            const now = Date.now();
+            if(now - lastMoveTime < moveDebounce) return;
+            lastMoveTime = now;
             if(isValid(currentPiece.shape,1,0,currentPiece.x,currentPiece.y))currentPiece.x++; 
         }
-        function rotate() { 
+        
+        function moveUp() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
-            const now = Date.now();
-            // 防止快速點擊導致多次旋轉
-            if(now - lastRotateTime < 100) return;
-            lastRotateTime = now;
-            
-            const r=currentPiece.rotate(); 
-            for(const k of [-1,1,-2,2]){if(isValid(r,k,0,currentPiece.x,currentPiece.y)){currentPiece.shape=r;currentPiece.x+=k;return;}} 
+            rotate(); 
         }
+        
         function softDrop() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
             if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++; 
             else{placePiece();clearLines();spawnPiece();} 
         }
+        
+        // 旋轉按鈕 - 防抖動確保每次只旋轉一次
+        function rotate() { 
+            if(!gameRunning||gamePaused||!currentPiece)return; 
+            const now = Date.now();
+            if(now - lastRotateTime < rotateDebounce) return;
+            lastRotateTime = now;
+            
+            const r=currentPiece.rotate(); 
+            for(const k of [-1,1,-2,2]){if(isValid(r,k,0,currentPiece.x,currentPiece.y)){currentPiece.shape=r;currentPiece.x+=k;return;}} 
+        }
+        
         function hardDrop() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
             while(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y)){currentPiece.y++;score+=2;} 
             placePiece();clearLines();spawnPiece();updateDisplay(); 
         }
+        
         function togglePause() { 
             if(!gameRunning)return; 
             gamePaused=!gamePaused; 
             document.getElementById('pauseOverlay').classList.toggle('hidden',!gamePaused); 
         }
+        
         function gameLoop(t) { 
             if(!gameRunning)return; 
             if(!gamePaused&&t-lastDrop>dropInterval){moveDown();lastDrop=t;} 
             drawBoard();drawPiece(currentPiece); 
             animationId=requestAnimationFrame(gameLoop); 
         }
+        
         function startGame() {
             board=createBoard(); score=0; lines=0; level=1; dropInterval=1000;
             gameRunning=true; gamePaused=false; currentPiece=null; nextPiece=null;
@@ -265,6 +286,11 @@
             else if(e.key==='ArrowDown')e.preventDefault(),softDrop();
             else if(e.key===' ')e.preventDefault(),hardDrop();
             else if(e.key==='p'||e.key==='P')togglePause();
+        });
+        
+        // 阻止按鈕的默認觸摸行為
+        document.querySelectorAll('.dpad-btn, .action-btn').forEach(btn => {
+            btn.addEventListener('touchstart', function(e) { e.preventDefault(); }, {passive: false});
         });
         
         drawBoard();
