@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a2e">
@@ -25,14 +25,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
+            gap: 8px;
+            padding: 8px;
             width: 100%;
-            max-width: 400px;
+            max-width: 100vw;
         }
         .game-header { text-align: center; color: #fff; }
         .game-title {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             background: linear-gradient(90deg, #38bdf8, #818cf8);
             -webkit-background-clip: text;
@@ -40,35 +40,36 @@
         }
         .game-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: flex-start;
             width: 100%;
+            max-width: 360px;
         }
-        .game-board { position: relative; flex: 1; }
+        .game-board { position: relative; flex: 1; min-width: 0; }
         canvas#gameCanvas {
             display: block;
             width: 100%;
             background: rgba(0, 0, 0, 0.6);
             border: 2px solid #38bdf8;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
         .side-panel {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             color: #fff;
-            min-width: 70px;
+            min-width: 60px;
         }
         .panel-box {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 6px;
-            padding: 8px;
+            border-radius: 4px;
+            padding: 6px;
             text-align: center;
         }
-        .panel-title { font-size: 10px; color: #888; text-transform: uppercase; }
-        .panel-value { font-size: 18px; font-weight: bold; color: #38bdf8; }
+        .panel-title { font-size: 9px; color: #888; text-transform: uppercase; }
+        .panel-value { font-size: 16px; font-weight: bold; color: #38bdf8; }
         .next-canvas { background: rgba(0, 0, 0, 0.4); border-radius: 4px; }
         
         /* 虛擬搖桿 */
@@ -76,19 +77,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 8px;
             width: 100%;
+            max-width: 360px;
         }
         .joystick-container {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
+            flex-shrink: 0;
         }
         .joystick-base {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.05) 70%);
             border: 2px solid rgba(56, 189, 248, 0.4);
             border-radius: 50%;
@@ -98,36 +101,59 @@
         }
         .joystick-thumb {
             position: absolute;
-            width: 45px;
-            height: 45px;
+            width: 36px;
+            height: 36px;
             background: radial-gradient(circle, #38bdf8 0%, #0ea5e9 100%);
             border-radius: 50%;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
             cursor: pointer;
         }
         .action-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            align-items: center;
         }
         .action-btn {
-            width: 55px;
-            height: 55px;
+            width: 44px;
+            height: 44px;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(56, 189, 248, 0.1) 100%);
             border: 2px solid rgba(56, 189, 248, 0.5);
             border-radius: 50%;
             color: #38bdf8;
-            font-size: 20px;
+            font-size: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
         }
         .action-btn:active {
             background: rgba(56, 189, 248, 0.5);
             transform: scale(0.95);
         }
-        .action-btn.rotate { width: 65px; height: 65px; font-size: 24px; }
+        .action-btn.rotate { 
+            width: 52px; 
+            height: 52px; 
+            font-size: 20px;
+            position: relative;
+        }
+        .action-btn.rotate::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: #38bdf8;
+            border-radius: 2px;
+            transition: width 0.1s;
+        }
+        .action-btn.rotate.holding::after {
+            width: 80%;
+        }
         
         .overlay {
             position: absolute;
@@ -138,32 +164,33 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             z-index: 10;
-            border-radius: 8px;
+            border-radius: 6px;
         }
         .overlay.hidden { display: none; }
         .overlay-title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             background: linear-gradient(90deg, #38bdf8, #818cf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .start-btn {
-            padding: 12px 40px;
+            padding: 10px 35px;
             background: linear-gradient(90deg, #38bdf8, #818cf8);
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             color: #000;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
         }
         .controls-hint {
             color: rgba(255, 255, 255, 0.4);
-            font-size: 11px;
+            font-size: 10px;
             text-align: center;
+            padding: 0 10px;
         }
     </style>
 </head>
@@ -182,7 +209,7 @@
                 </div>
                 <div class="overlay hidden" id="gameOverOverlay">
                     <div class="overlay-title">遊戲結束</div>
-                    <div id="finalScore" style="color:#888"></div>
+                    <div id="finalScore" style="color:#888;font-size:14px"></div>
                     <button class="start-btn" onclick="startGame()">再玩一次</button>
                 </div>
                 <div class="overlay hidden" id="pauseOverlay">
@@ -202,7 +229,7 @@
                 </div>
                 <div class="panel-box">
                     <div class="panel-title">下一個</div>
-                    <canvas id="nextCanvas" class="next-canvas" width="60" height="60"></canvas>
+                    <canvas id="nextCanvas" class="next-canvas" width="50" height="50"></canvas>
                 </div>
             </div>
         </div>
@@ -214,13 +241,13 @@
                 </div>
             </div>
             <div class="action-buttons">
-                <div class="action-btn rotate" id="btnRotate" ontouchstart="rotate()" onclick="rotate()">↻</div>
+                <div class="action-btn rotate" id="btnRotate" ontouchstart="startRotate()" ontouchend="cancelRotate()" onmousedown="startRotate()" onmouseup="cancelRotate()" onmouseleave="cancelRotate()">↻</div>
                 <div class="action-btn" id="btnHardDrop" ontouchstart="hardDrop()" onclick="hardDrop()">⬇</div>
                 <div class="action-btn" id="btnPause" ontouchstart="togglePause()" onclick="togglePause()">❚❚</div>
             </div>
         </div>
         
-        <div class="controls-hint">搖桿：上下左右移動 • 旋轉/硬降按鈕</div>
+        <div class="controls-hint">搖桿：上下左右移動 • 按住旋轉按鈕 1 秒旋轉</div>
     </div>
 
     <script>
@@ -234,7 +261,7 @@
         const ROWS = 20;
         
         function resizeCanvas() {
-            const maxWidth = Math.min(window.innerWidth - 20, 280);
+            const maxWidth = Math.min(window.innerWidth - 16, 260);
             canvas.width = maxWidth;
             canvas.height = maxWidth * 2;
             BLOCK_SIZE = canvas.width / COLS;
@@ -258,6 +285,39 @@
         let score = 0, lines = 0, level = 1;
         let gameRunning = false, gamePaused = false;
         let dropInterval = 1000, lastDrop = 0, animationId = null;
+        
+        // 旋轉按鈕長按功能
+        let rotateTimer = null;
+        const ROTATE_HOLD_TIME = 1000; // 1秒
+        
+        function startRotate() {
+            if (!gameRunning || gamePaused || !currentPiece) return;
+            
+            if (rotateTimer) clearTimeout(rotateTimer);
+            
+            const btn = document.getElementById('btnRotate');
+            btn.classList.add('holding');
+            
+            rotateTimer = setTimeout(() => {
+                if (btn.classList.contains('holding')) {
+                    performRotate();
+                }
+            }, ROTATE_HOLD_TIME);
+        }
+        
+        function cancelRotate() {
+            if (rotateTimer) {
+                clearTimeout(rotateTimer);
+                rotateTimer = null;
+            }
+            document.getElementById('btnRotate').classList.remove('holding');
+        }
+        
+        function performRotate() {
+            rotateTimer = null;
+            document.getElementById('btnRotate').classList.remove('holding');
+            rotate();
+        }
         
         class Piece {
             constructor(type) {
@@ -304,111 +364,13 @@
         function drawNext() {
             nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
             if (!nextPiece) return;
-            const s = 15, ox = (nextCanvas.width-nextPiece.shape[0].length*s)/2, oy = (nextCanvas.height-nextPiece.shape.length*s)/2;
+            const s = 12, ox = (nextCanvas.width-nextPiece.shape[0].length*s)/2, oy = (nextCanvas.height-nextPiece.shape.length*s)/2;
             nextPiece.shape.forEach((row,y)=>row.forEach((v,x)=>{if(v){nextCtx.fillStyle=COLORS[v];nextCtx.fillRect(ox+x*s,oy+y*s,s,s);nextCtx.strokeStyle='rgba(0,0,0,0.5)';nextCtx.strokeRect(ox+x*s,oy+y*s,s,s);}}));
         }
         
         function isValid(shape, dx, dy, px, py) {
-            for(let y=0;y<shape.length;y++) for(let x=0;x<shape[y].length;x++) if(shape[y][x]){
-                const nx=px+x+dx, ny=py+y+dy;
-                if(nx<0||nx>=COLS||ny>=ROWS||(ny>=0&&board[ny][nx])) return false;
-            }
-            return true;
-        }
-        
-        function placePiece() { if(!currentPiece)return; currentPiece.shape.forEach((row,y)=>row.forEach((v,x)=>{if(v&&currentPiece.y+y>=0)board[currentPiece.y+y][currentPiece.x+x]=v;})); }
-        
-        function clearLines() {
-            let n=0;
-            for(let y=ROWS-1;y>=0;y--) if(board[y].every(c=>c!==0)){board.splice(y,1);board.unshift(Array(COLS).fill(0));n++;y++;}
-            if(n>0){const pts=[0,100,300,500,800];score+=pts[n]*level;lines+=n;level=Math.floor(lines/10)+1;dropInterval=Math.max(100,1000-(level-1)*80);updateDisplay();}
-        }
-        
-        function updateDisplay() {
-            document.getElementById('score').textContent=score;
-            document.getElementById('level').textContent=level;
-        }
-        
-        function gameOver() { gameRunning=false; cancelAnimationFrame(animationId); document.getElementById('finalScore').textContent='得分: '+score; document.getElementById('gameOverOverlay').classList.remove('hidden'); }
-        
-        function spawnPiece() {
-            currentPiece=nextPiece||randomPiece(); nextPiece=randomPiece(); drawNext();
-            if(!isValid(currentPiece.shape,0,0,currentPiece.x,currentPiece.y)) gameOver();
-        }
-        
-        function moveDown() { if(!gameRunning||gamePaused||!currentPiece)return; if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++;else{placePiece();clearLines();spawnPiece();} }
-        function moveLeft() { if(gameRunning&&!gamePaused&&currentPiece&&isValid(currentPiece.shape,-1,0,currentPiece.x,currentPiece.y))currentPiece.x--; }
-        function moveRight() { if(gameRunning&&!gamePaused&&currentPiece&&isValid(currentPiece.shape,1,0,currentPiece.x,currentPiece.y))currentPiece.x++; }
-        function rotate() { if(!gameRunning||gamePaused||!currentPiece)return; const r=currentPiece.rotate(); for(const k of [-1,1,-2,2]){if(isValid(r,k,0,currentPiece.x,currentPiece.y)){currentPiece.shape=r;currentPiece.x+=k;return;}} }
-        function hardDrop() { if(!gameRunning||gamePaused||!currentPiece)return; while(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y)){currentPiece.y++;score+=2;} placePiece();clearLines();spawnPiece();updateDisplay(); }
-        function togglePause() { if(!gameRunning)return; gamePaused=!gamePaused; document.getElementById('pauseOverlay').classList.toggle('hidden',!gamePaused); }
-        
-        function gameLoop(t) { if(!gameRunning)return; if(!gamePaused&&t-lastDrop>dropInterval){moveDown();lastDrop=t;} drawBoard();drawPiece(currentPiece); animationId=requestAnimationFrame(gameLoop); }
-        
-        function startGame() {
-            board=createBoard(); score=0; lines=0; level=1; dropInterval=1000;
-            gameRunning=true; gamePaused=false; currentPiece=null; nextPiece=null;
-            resizeCanvas(); updateDisplay();
-            document.getElementById('startOverlay').classList.add('hidden');
-            document.getElementById('gameOverOverlay').classList.add('hidden');
-            document.getElementById('pauseOverlay').classList.add('hidden');
-            spawnPiece(); lastDrop=performance.now(); animationId=requestAnimationFrame(gameLoop);
-        }
-        
-        // 虛擬搖桿
-        const joystick=document.getElementById('joystick');
-        const thumb=document.getElementById('joystickThumb');
-        let joyActive=false, joyX=0, joyY=0, joyTimer=null;
-        const MAX_DIST=42;
-        
-        thumb.addEventListener('touchstart',e=>{e.preventDefault();joyActive=true;thumb.style.transition='none';},{passive:false});
-        document.addEventListener('touchmove',e=>{
-            if(!joyActive)return;
-            const t=Array.from(e.touches).find(t=>t.clientX>joystick.offsetLeft&&t.clientX<joystick.offsetLeft+joystick.offsetWidth&&t.clientY>joystick.offsetTop&&t.clientY<joystick.offsetTop+joystick.offsetHeight);
-            if(!t)return;
-            const cx=joystick.offsetLeft+joystick.offsetWidth/2, cy=joystick.offsetTop+joystick.offsetHeight/2;
-            let dx=t.clientX-cx, dy=t.clientY-cy;
-            const dist=Math.sqrt(dx*dx+dy*dy);
-            if(dist>MAX_DIST){dx*=MAX_DIST/dist;dy*=MAX_DIST/dist;}
-            thumb.style.transform=`translate(${dx}px,${dy}px)`;
-            joyX=dx/MAX_DIST; joyY=dy/MAX_DIST;
-            if(joyTimer){clearTimeout(joyTimer);joyTimer=null;}
-            if(Math.abs(joyX)>0.3){if(joyX>0)moveRight();else moveLeft(); joyTimer=setTimeout(()=>{if(Math.abs(joyX)>0.3){if(joyX>0)moveRight();else moveLeft();}},150);}
-            if(joyY<-0.3)rotate(); else if(joyY>0.5)hardDrop();
-        },{passive:true});
-        document.addEventListener('touchend',()=>{
-            if(!joyActive)return; joyActive=false; thumb.style.transition='transform 0.2s'; thumb.style.transform='translate(0,0)'; joyX=0;joyY=0;
-            if(joyTimer){clearTimeout(joyTimer);joyTimer=null;}
-        });
-        
-        // 滑鼠支援
-        thumb.addEventListener('mousedown',e=>{e.preventDefault();joyActive=true;thumb.style.transition='none';});
-        document.addEventListener('mousemove',e=>{
-            if(!joyActive)return;
-            const cx=joystick.offsetLeft+joystick.offsetWidth/2, cy=joystick.offsetTop+joystick.offsetHeight/2;
-            let dx=e.clientX-cx, dy=e.clientY-cy;
-            const dist=Math.sqrt(dx*dx+dy*dy);
-            if(dist>MAX_DIST){dx*=MAX_DIST/dist;dy*=MAX_DIST/dist;}
-            thumb.style.transform=`translate(${dx}px,${dy}px)`;
-            joyX=dx/MAX_DIST;joyY=dy/MAX_DIST;
-            if(Math.abs(joyX)>0.3){if(joyX>0)moveRight();else moveLeft();}
-            if(joyY<-0.3)rotate();else if(joyY>0.5)hardDrop();
-        });
-        document.addEventListener('mouseup',()=>{
-            if(!joyActive)return; joyActive=false; thumb.style.transition='transform 0.2s'; thumb.style.transform='translate(0,0)'; joyX=0;joyY=0;
-        });
-        
-        // 鍵盤
-        document.addEventListener('keydown',e=>{
-            if(!gameRunning)return;
-            if(e.key==='ArrowLeft')e.preventDefault(),moveLeft();
-            else if(e.key==='ArrowRight')e.preventDefault(),moveRight();
-            else if(e.key==='ArrowUp')e.preventDefault(),rotate();
-            else if(e.key==='ArrowDown'||e.key===' ')e.preventDefault(),hardDrop();
-            else if(e.key==='p'||e.key==='P')togglePause();
-        });
-        
-        drawBoard();
-    </script>
+            for(let y=0;y<shape.length;y++) for(let x=0;x<shape[y].length;x++) if(shape[y][x]){\n                const nx=px+x+dx, ny=py+y+dy;\n                if(nx<0||nx>=COLS||ny>=ROWS||(ny>=0&&board[ny][nx])) return false;\n            }\n            return true;\n        }\n        
+        function placePiece() { if(!currentPiece)return; currentPiece.shape.forEach((row,y)=>row.forEach((v,x)=>{if(v&&currentPiece.y+y>=0)board[currentPiece.y+y][currentPiece.x+x]=v;})); }\n        
+        function clearLines() {\n            let n=0;\n            for(let y=ROWS-1;y>=0;y--) if(board[y].every(c=>c!==0)){board.splice(y,1);board.unshift(Array(COLS).fill(0));n++;y++;}\n            if(n>0){const pts=[0,100,300,500,800];score+=pts[n]*level;lines+=n;level=Math.floor(lines/10)+1;dropInterval=Math.max(100,1000-(level-1)*80);updateDisplay();}\n        }\n        \n        function updateDisplay() {\n            document.getElementById('score').textContent=score;\n            document.getElementById('level').textContent=level;\n        }\n        \n        function gameOver() { gameRunning=false; cancelAnimationFrame(animationId); document.getElementById('finalScore').textContent='得分: '+score; document.getElementById('gameOverOverlay').classList.remove('hidden'); }\n        \n        function spawnPiece() {\n            currentPiece=nextPiece||randomPiece(); nextPiece=randomPiece(); drawNext();\n            if(!isValid(currentPiece.shape,0,0,currentPiece.x,currentPiece.y)) gameOver();\n        }\n        \n        function moveDown() { if(!gameRunning||gamePaused||!currentPiece)return; if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++;else{placePiece();clearLines();spawnPiece();} }\n        function moveLeft() { if(gameRunning&&!gamePaused&&currentPiece&&isValid(currentPiece.shape,-1,0,currentPiece.x,currentPiece.y))currentPiece.x--; }\n        function moveRight() { if(gameRunning&&!gamePaused&&currentPiece&&isValid(currentPiece.shape,1,0,currentPiece.x,currentPiece.y))currentPiece.x++; }\n        function rotate() { if(!gameRunning||gamePaused||!currentPiece)return; const r=currentPiece.rotate(); for(const k of [-1,1,-2,2]){if(isValid(r,k,0,currentPiece.x,currentPiece.y)){currentPiece.shape=r;currentPiece.x+=k;return;}} }\n        function hardDrop() { if(!gameRunning||gamePaused||!currentPiece)return; while(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y)){currentPiece.y++;score+=2;} placePiece();clearLines();spawnPiece();updateDisplay(); }\n        function togglePause() { if(!gameRunning)return; gamePaused=!gamePaused; document.getElementById('pauseOverlay').classList.toggle('hidden',!gamePaused); }\n        \n        function gameLoop(t) { if(!gameRunning)return; if(!gamePaused&&t-lastDrop>dropInterval){moveDown();lastDrop=t;} drawBoard();drawPiece(currentPiece); animationId=requestAnimationFrame(gameLoop); }\n        \n        function startGame() {\n            board=createBoard(); score=0; lines=0; level=1; dropInterval=1000;\n            gameRunning=true; gamePaused=false; currentPiece=null; nextPiece=null;\n            resizeCanvas(); updateDisplay();\n            document.getElementById('startOverlay').classList.add('hidden');\n            document.getElementById('gameOverOverlay').classList.add('hidden');\n            document.getElementById('pauseOverlay').classList.add('hidden');\n            spawnPiece(); lastDrop=performance.now(); animationId=requestAnimationFrame(gameLoop);\n        }\n        \n        // 虛擬搖桿\n        const joystick=document.getElementById('joystick');\n        const thumb=document.getElementById('joystickThumb');\n        let joyActive=false, joyX=0, joyY=0, joyTimer=null;\n        const MAX_DIST=35;\n        \n        thumb.addEventListener('touchstart',e=>{e.preventDefault();joyActive=true;thumb.style.transition='none';},{passive:false});\n        document.addEventListener('touchmove',e=>{\n            if(!joyActive)return;\n            const t=Array.from(e.touches).find(t=>t.clientX>joystick.offsetLeft&&t.clientX<joystick.offsetLeft+joystick.offsetWidth&&t.clientY>joystick.offsetTop&&t.clientY<joystick.offsetTop+joystick.offsetHeight);\n            if(!t)return;\n            const cx=joystick.offsetLeft+joystick.offsetWidth/2, cy=joystick.offsetTop+joystick.offsetHeight/2;\n            let dx=t.clientX-cx, dy=t.clientY-cy;\n            const dist=Math.sqrt(dx*dx+dy*dy);\n            if(dist>MAX_DIST){dx*=MAX_DIST/dist;dy*=MAX_DIST/dist;}\n            thumb.style.transform=`translate(${dx}px,${dy}px)`;\n            joyX=dx/MAX_DIST; joyY=dy/MAX_DIST;\n            if(joyTimer){clearTimeout(joyTimer);joyTimer=null;}\n            if(Math.abs(joyX)>0.3){if(joyX>0)moveRight();else moveLeft(); joyTimer=setTimeout(()=>{if(Math.abs(joyX)>0.3){if(joyX>0)moveRight();else moveLeft();}},150);}\n            if(joyY<-0.3)rotate(); else if(joyY>0.5)hardDrop();\n        },{passive:true});\n        document.addEventListener('touchend',()=>{\n            if(!joyActive)return; joyActive=false; thumb.style.transition='transform 0.2s'; thumb.style.transform='translate(0,0)'; joyX=0;joyY=0;\n            if(joyTimer){clearTimeout(joyTimer);joyTimer=null;}\n        });\n        \n        // 滑鼠支援\n        thumb.addEventListener('mousedown',e=>{e.preventDefault();joyActive=true;thumb.style.transition='none';});\n        document.addEventListener('mousemove',e=>{\n            if(!joyActive)return;\n            const cx=joystick.offsetLeft+joystick.offsetWidth/2, cy=joystick.offsetTop+joystick.offsetHeight/2;\n            let dx=e.clientX-cx, dy=e.clientY-cy;\n            const dist=Math.sqrt(dx*dx+dy*dy);\n            if(dist>MAX_DIST){dx*=MAX_DIST/dist;dy*=MAX_DIST/dist;}\n            thumb.style.transform=`translate(${dx}px,${dy}px)`;\n            joyX=dx/MAX_DIST;joyY=dy/MAX_DIST;\n            if(Math.abs(joyX)>0.3){if(joyX>0)moveRight();else moveLeft();}\n            if(joyY<-0.3)rotate();else if(joyY>0.5)hardDrop();\n        });\n        document.addEventListener('mouseup',()=>{\n            if(!joyActive)return; joyActive=false; thumb.style.transition='transform 0.2s'; thumb.style.transform='translate(0,0)'; joyX=0;joyY=0;\n        });\n        \n        // 鍵盤\n        document.addEventListener('keydown',e=>{\n            if(!gameRunning)return;\n            if(e.key==='ArrowLeft')e.preventDefault(),moveLeft();\n            else if(e.key==='ArrowRight')e.preventDefault(),moveRight();\n            else if(e.key==='ArrowUp')e.preventDefault(),rotate();\n            else if(e.key==='ArrowDown'||e.key===' ')e.preventDefault(),hardDrop();\n            else if(e.key==='p'||e.key==='P')togglePause();\n        });\n        \n        drawBoard();\n    </script>
 </body>
 </html>
