@@ -236,10 +236,9 @@
             rotate(); 
         }
         
-        function softDrop() { 
-            if(!gameRunning||gamePaused||!currentPiece)return; 
-            if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++; 
-            else{placePiece();clearLines();spawnPiece();} 
+        function softDrop() {
+            if(!gameRunning||gamePaused||!currentPiece)return;
+            for(let i=0;i<3;i++){if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++;else{placePiece();clearLines();spawnPiece();updateDisplay();return;}}
         }
         
         function rotate() { 
