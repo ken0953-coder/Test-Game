@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>俄羅斯方塊消除</title>
+    <title>俄羅斯方塊</title>
     <link rel="manifest" href="manifest.json">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -35,7 +35,7 @@
             max-width: 100vw;
         }
         .game-header { text-align: center; color: #fff; }
-        .game-title { font-size: 14px; font-weight: bold; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
+        .game-title { font-size: 14px; font-weight: bold; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: left; }
         .game-container { display: flex; gap: 3px; align-items: flex-start; width: 100%; max-width: 280px; margin-top: -90px; position: relative; }
         /* panel moved up 10px from original */
         .game-board { position: relative; flex: 1; min-width: 0; }
@@ -116,11 +116,11 @@
 </head>
 <body>
     <div class="game-wrapper">
-        <div class="game-header"><div class="game-title">俄羅斯方塊消除</div></div>
+        <div class="game-header"><div class="game-title">俄羅斯方塊</div></div>
         <div class="game-container">
             <div class="game-board">
                 <canvas id="gameCanvas"></canvas>
-                <div class="overlay" id="startOverlay"><div class="overlay-title">俄羅斯方塊消除</div><button class="start-btn" onclick="startGame()">開始遊戲</button></div>
+                <div class="overlay" id="startOverlay"><div class="overlay-title">俄羅斯方塊</div><button class="start-btn" onclick="startGame()">開始遊戲</button></div>
                 <div class="overlay hidden" id="gameOverOverlay"><div class="overlay-title">遊戲結束</div><div id="finalScore" style="color:#888;font-size:9px"></div><button class="start-btn" onclick="startGame()">再玩一次</button></div>
                 <div class="overlay hidden" id="pauseOverlay"><div class="overlay-title">暫停</div><button class="start-btn" onclick="togglePause()">繼續</button></div>
             </div>
