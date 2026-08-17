@@ -25,7 +25,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 0px;
             padding: 2px;
             width: 100%;
             max-width: 100vw;
@@ -41,13 +41,14 @@
         .panel-value { font-size: 10px; font-weight: bold; color: #38bdf8; }
         .next-canvas { background: rgba(0, 0, 0, 0.4); border-radius: 3px; }
         
-        /* 控制區域 - 更緊湊 */
+        /* 控制區域 */
         .controls-area {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             gap: 5px;
-            margin-top: 2px;
+            margin-top: -6px;
+            margin-left: -15px;
             width: 100%;
             max-width: 280px;
             padding-bottom: 4px;
@@ -209,7 +210,6 @@
         
         function moveDown() { if(!gameRunning||gamePaused||!currentPiece)return; if(isValid(currentPiece.shape,0,1,currentPiece.x,currentPiece.y))currentPiece.y++;else{placePiece();clearLines();spawnPiece();} }
         
-        // 移動方向 - 使用防抖動確保每次只移動一格
         function moveLeft() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
             const now = Date.now();
@@ -237,7 +237,6 @@
             else{placePiece();clearLines();spawnPiece();} 
         }
         
-        // 旋轉按鈕 - 防抖動確保每次只旋轉一次
         function rotate() { 
             if(!gameRunning||gamePaused||!currentPiece)return; 
             const now = Date.now();
