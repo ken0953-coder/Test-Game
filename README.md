@@ -139,3 +139,4 @@ A: 可以！所有原始碼都在 `www/index.html`，使用任何文字編輯器
 
 免費開源，可個人或商業使用。test
 refresh
+refresh2
